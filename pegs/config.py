@@ -40,3 +40,4 @@ AUGUSTUS_EXT = os.path.join(ROOT, "pegs/extrinsic.cfg")
 BRAKER2_BIN = "/Work/pipeline/software/Base/braker2/v2.1.6/bin/"
 BUSCO_CONFIG_FILE = "/Work/pipeline/software/Base/busco/lastest/bin/config/myconfig.ini"
 PSI_BIN = "/Work/pipeline/software/Base/ransposonPSI/v1.0.1/bin/"
+
