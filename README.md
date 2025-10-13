@@ -22,7 +22,7 @@ pegs package includes some third-party software:
 * [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/man.shtml)
 * [gffread](https://github.com/gpertea/gffread)
 * [stringtie](https://github.com/gpertea/stringtie)
-* [seqclean]()
+* [seqclean](https://sourceforge.net/projects/seqclean/)
 * [pasa](https://github.com/PASApipeline/PASApipeline)
 * [EVidenceModeler](https://github.com/EVidenceModeler/EVidenceModeler)
 * [busco](https://gitlab.com/ezlab/busco)
