@@ -30,6 +30,20 @@ pegs package includes some third-party software:
 * [ransposonPSI](http://transposonpsi.sourceforge.net/)
 * [STAR](https://github.com/alexdobin/STAR)
 
+## Installation
+```
+git clone https://github.com/zxgsy520/pegs.git
+mkdir bin
+cd bin
+cp /home/zhangxg/biotool /home/zhangxg/gffvert .
+chmod 755 *
+cd ..
+chmod 755 fpegs.py
+cd pegs
+#Modify software configuration files, or add related software to environment variables.
+vi config.py
+```
+
 ## Example1
 ```
 fpegs.py genome.fasta \ #输入预测的基因组
