@@ -35,7 +35,7 @@ def create_homo_ann_task(genome, protein, cds, rna_list, prefix, work_dir, out_d
         type="local",
         option="-pe smp 1 %s" % QUEUE,
         script="""
-python {root}/pegs/homo_ann.py {genome} --protein {protein} \\
+python {root}/pegs/homo_ann.pyc {genome} --protein {protein} \\
   --prefix {prefix} {cds} {rna_list} --threads {thread} --concurrent {concurrent} \\
   --refresh {refresh} --job_type {job_type} --work_dir {work_dir} \\
   --out_dir {out_dir}
@@ -75,7 +75,7 @@ def create_de_novo_ann_task(genome, homo, homogff, prefix, species,
         type="local",
         option="-pe smp 1 %s" % QUEUE,
         script="""
-python {root}/pegs/de_novo_ann.py {genome} --prefix {prefix} \\
+python {root}/pegs/de_novo_ann.pyc {genome} --prefix {prefix} \\
   --species {species} --kingdom {kingdom} \\
   --minlen {minlen} {temp} \\
   --threads {thread} --concurrent {concurrent} --refresh {refresh} --job_type {job_type} \\
