@@ -1,6 +1,33 @@
 # pegs
 Eukaryotic gene structure prediction
 
+Third-party
+-----------
+
+pegs package includes some third-party software:
+* [python](https://www.python.org/) (使用python3运行较多，使用python2也是可以运行的，撰写的充分考虑了兼容问题)
+* * Three-party python package
+  * [pysam](https://pypi.org/project/pysam/)
+  * [matplotlib](https://matplotlib.org/)
+  * [numpy](https://numpy.org/doc/stable/index.html)
+  * [scipy](https://github.com/scipy/scipy)
+* [R](https://www.r-project.org/)
+* [biotool](https://github.com/zxgsy520/biotool)
+* [gffvert](https://github.com/zxgsy520/gffvert)
+* [metaeuk](https://github.com/soedinglab/metaeuk)
+* [miniprot](https://github.com/lh3/miniprot)
+* [eviann](https://github.com/alekseyzimin/EviAnn_release)
+* [braker2](https://github.com/Gaius-Augustus/BRAKER)
+* [GeneMark-ES](http://topaz.gatech.edu/GeneMark/license_download.cgi)
+* [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/man.shtml)
+* [gffread](https://github.com/gpertea/gffread)
+* [stringtie](https://github.com/gpertea/stringtie)
+* [seqclean]()
+* [pasa](https://github.com/PASApipeline/PASApipeline)
+* [EVidenceModeler](https://github.com/EVidenceModeler/EVidenceModeler)
+* [busco](https://gitlab.com/ezlab/busco)
+* [augustus](http://bioinf.uni-greifswald.de/augustus/)
+* [ransposonPSI](http://transposonpsi.sourceforge.net/)
 
 ## Example1
 ```
