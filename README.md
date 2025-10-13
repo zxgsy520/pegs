@@ -28,6 +28,7 @@ pegs package includes some third-party software:
 * [busco](https://gitlab.com/ezlab/busco)
 * [augustus](http://bioinf.uni-greifswald.de/augustus/)
 * [ransposonPSI](http://transposonpsi.sourceforge.net/)
+* [STAR](https://github.com/alexdobin/STAR)
 
 ## Example1
 ```
