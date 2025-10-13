@@ -41,7 +41,71 @@ cd ..
 chmod 755 fpegs.py
 cd pegs
 #Modify software configuration files, or add related software to environment variables.
-vi config.py
+vi config.py #编辑文献，配置相关软件和数据库
+```
+## Quick usage
+```
+./fpegs.py -h
+usage: fpegs.py [-h] [-m FILE] -p FILE [--cds FILE] [--rna_list FILE]
+                [--homo FILE [FILE ...]] [-hf FILE [FILE ...]] [-igff FILE]
+                [--prefix STR] [-s STR] [-k STR] [-db STR] [-ml STR]
+                [--no_split] [--thread INT] [--concurrent INT] [--refresh INT]
+                [--job_type {sge,local}] [--work_dir DIR] [--out_dir DIR]
+                STR
+
+URL: https://github.com/zxgsy520/bypegs
+name:
+    fpegs.py Rapid prediction of fungal genome genes
+
+attention:
+    fpegs.py genome.fasta -p homo.protein.fasta --prefix name
+    fpegs.py *genome.fasta -p homo.protein.fasta --prefix name
+#如果没有转录组数据，可以使用gffread提取近源物种的转绿本
+gffread -W -y proteins.faa -w transcripts.fa -g genome.fa genome.gff  #从近源物种中提取蛋白质转绿本数据
+
+version: v1.2.1
+contact:  Xingguo Zhang <invicoun@foxmail.com>        
+
+positional arguments:
+  STR                   Input genome file(fasta). #输入组装的基因组文件
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -m FILE, --masked FILE #输入屏蔽重复注释后的基因组文件（非必须）
+                        Input the repeat masked genome(fasta).
+  -p FILE, --protein FILE #输入去冗余后的近源物种蛋白
+                        Input homologous species protein sequence.
+  --cds FILE            Input homologous species cds #输入转录本或者近源物种的CDS（非必须）
+                        sequence(也可输入组装的转录本).
+  --rna_list FILE       Input homologous species RNA #输入转录组测序数据（非必须）
+                        sequence(也可输入测序的转绿组数据).
+  --homo FILE [FILE ...] #输入近源物种基因组文件
+                        Input homologous species genome sequences.
+  -hf FILE [FILE ...], --homogff FILE [FILE ...] #输入近源物种gff文件
+                        Input gff file for homologous species annotation.
+  -igff FILE, --introns_gff FILE #输入内含子的位置信息（非必须）
+                        Input gff file for introns(introns.f.gff)
+  --prefix STR          Input sample name. #输出结果前缀
+  -s STR, --species STR  #设置分析的物种名称
+                        Input the species name of the sample.
+  -k STR, --kingdom STR #选择分析物种的类型（对于藻类，选择plant比fungi注释的效果更好）
+                        Kingdom of the sample (fungi, plant, animal,
+                        eukaryota), default=fungi
+  -db STR, --busco_database STR 设置busco评估的数据库名称或者路径
+                        Specify the name of the BUSCO lineage to be
+                        used(/Work/database/busco_db/odb12/fungi).
+                        default=fungi
+  -ml STR, --minlen STR #过滤短序列，提升注释的速度
+                        Input filtering preserves the shortest read length,
+                        default=10kb
+  --no_split            Set not to split and integrate the genome #设置不对基因组进行分割注释
+  --thread INT          Threads used to run blastp (default: 4) #设置线程数目
+  --concurrent INT      Maximum number of jobs concurrent (default: 10) #设置并行任务数据
+  --refresh INT         Refresh time of log in seconds (default: 30) #设置任务检测刷新的时间
+  --job_type {sge,local} #设置使用sge系统进行分析，或者local本地单节点分析
+                        Jobs run on [sge, local] (default: local)
+  --work_dir DIR        Work directory (default: current directory) #设置工作路径
+  --out_dir DIR         Output directory (default: current directory) #设置最终输出结果路径
 ```
 
 ## Example1
