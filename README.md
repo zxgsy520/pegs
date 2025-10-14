@@ -109,11 +109,17 @@ optional arguments:
 ```
 
 ## Example
-### Transcriptome assisted gene prediction
+### Transcriptome assisted gene prediction（转绿组辅助基因组预测）
 ```
 python pegs/rnaseq2gene.py genome.fasta --rnaseq  rna.list \
  --prefix S1 --thread 10 --trim 3 --work_dir work --out_dir out --job_type sge
-#rna.list为二代测序的转录组数据，第一列为样本名称，第二和三列为reads的R1和R2。
+#rna.list为二代测序的转录组数据，第一列和二列为reads的R1和R2。
+#输出结果out中存在S1.gmst.gff3、S1.pasa.gff3和S1.transdecoder.gff3上个文件，将其拷贝到fpegs后续输出结果中，在运行EVM的时候可以自动利用相关的结果进行整合。
+#工作路径中的work/06_Gmst/S1.trainset.aug.gtf用于后续augustus训练
+```
+### Augustus training model（Augustus训练模型）
+```
+python pegs/train_rna2aug.py genome.fasta --gff work/06_Gmst/S1.trainset.aug.gtf --species Phaffia_rhodozyma --job_type sge --work_dir aug_work
 ```
 
 ### Genomic prediction
