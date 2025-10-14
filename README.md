@@ -108,7 +108,15 @@ optional arguments:
   --out_dir DIR         Output directory (default: current directory) #设置最终输出结果路径
 ```
 
-## Example1
+## Example
+### Transcriptome assisted gene prediction
+```
+python pegs/rnaseq2gene.py genome.fasta --rnaseq  rna.list \
+ --prefix S1 --thread 10 --trim 3 --work_dir work --out_dir out --job_type sge
+#rna.list为二代测序的转录组数据，第一列为样本名称，第二和三列为reads的R1和R2。
+```
+
+### Genomic prediction
 ```
 fpegs.py genome.fasta \ #输入预测的基因组
   --protein homo/Syrphidae.faa \ #输入去冗余后的近源蛋白（同种或者属；如果没有同种或者属，可以输入同科的，同时需要转绿组数据否则预测的结果比较差）
