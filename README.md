@@ -1,7 +1,7 @@
 # pegs
 Eukaryotic gene structure prediction
 
-Third-party
+## Third-party
 -----------
 
 pegs package includes some third-party software:
@@ -29,6 +29,12 @@ pegs package includes some third-party software:
 * [augustus](http://bioinf.uni-greifswald.de/augustus/)
 * [ransposonPSI](http://transposonpsi.sourceforge.net/)
 * [STAR](https://github.com/alexdobin/STAR)
+
+## Model Website
+Augustus Model:[https://github.com/zxgsy520/augustus_model](https://github.com/zxgsy520/augustus_model)
+
+
+
 
 ## Installation
 ```
