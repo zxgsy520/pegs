@@ -169,3 +169,13 @@ fpegs.py genome.fasta \ #输入预测的基因组
 [1] CN115881217A，张兴国、程圣启、李三，[一种快速预测真核生物基因结构的方法和系统](https://wenku.baidu.com/view/a7f8a891757f5acfa1c7aa00b52acfc788eb9f9f.html?fr=aladdin266&ind=1&aigcsid=0&qtype=0&lcid=1&queryKey=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B&verifyType=undefined&_wkts_=1760340272493&bdQuery=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B)，中国，2025-10-03S
 
 [2] Luo X, Shua Z, Zhao D, Liu B, Luo H, Chen Y, Meng D, Song Z, Yang Q, Wang Z, Tang D, Zhang X, Zhang J, Ma K, Yao W. Genome assembly of pomegranate highlights structural variations driving population differentiation and key loci underpinning cold adaption. Hortic Res. 2025 Jan 21;12(5):uhaf022. doi: [10.1093/hr/uhaf022](https://pmc.ncbi.nlm.nih.gov/articles/PMC11979328/). PMID: 40206514; PMCID: PMC11979328.
+
+## Forecast results
+|物种中文名称|注释方法|线程数目（CPU/h）|基因组大小（Mb）|congtig序列数目|基因数目|平均CDS长度|蛋白质BUSCOs完整性（%）|	蛋白质功能注释率（%）|
+|  ----  |  ----  | ----  |  ----  | ----  |  ----  | ----  |  ----  | ----  |
+|草酸青霉|pegs	|196|	32.98 |	11	|11,946 |	1,410.99 |	99.34 |	95.83 |
+|草酸青霉|已发表|	499|	32.98 |	11	9,718 |	1,414.50 |	99.00 |	96.21 |
+|桑黄|pegs|	160|	35.83 	|24	11,880 |	1,525.23 |	92.88 |	91.56 |
+|桑黄|已发表|	450	|35.83 |	24	8,455| 	1,710.90| 	89.70 	|90.39 |
+|着色霉|pegs	|172	|35.32 |	7	|12,661 |	1,391.23|95.65 |	97.05 |
+|着色霉|已发表	|474|	35.32 |	7	|11,984 |	1,525.50| 	97.60| 	96.12 |
