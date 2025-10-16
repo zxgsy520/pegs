@@ -38,7 +38,8 @@ pegs package includes some third-party software:
 * [STAR](https://github.com/alexdobin/STAR)
 
 ## Model Website
-Augustus Model:[https://github.com/zxgsy520/augustus_model](https://github.com/zxgsy520/augustus_model)  #训练好的模型，可以下载使用（目前没有上传完）
+Augustus Model:[https://github.com/zxgsy520/augustus_model](https://github.com/zxgsy520/augustus_model)  #训练好的模型，可以下载使用（目前没有上传完，有需要可联系我们）
+GlimmerHMM  Model: （待上传）
 
 ## Installation
 ```
