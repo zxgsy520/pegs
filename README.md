@@ -176,6 +176,7 @@ fpegs.py genome.fasta \ #输入预测的基因组
 ## Application results
 -----------
 [1] Luo X, Shua Z, Zhao D, Liu B, Luo H, Chen Y, Meng D, Song Z, Yang Q, Wang Z, Tang D, Zhang X, Zhang J, Ma K, Yao W. Genome assembly of pomegranate highlights structural variations driving population differentiation and key loci underpinning cold adaption. Hortic Res. 2025 Jan 21;12(5):uhaf022. doi: [10.1093/hr/uhaf022](https://pmc.ncbi.nlm.nih.gov/articles/PMC11979328/). PMID: 40206514; PMCID: PMC11979328.
+
 [2] Chen P, Huang Z, Yin M, Wen YX, Jiang Q, Huang P, Qian R, Hong X, Zhu K, Xiao B, Chen M, Li S, Huang F, Han LT. The Hedyotis diffusa chromosome-level genome and multi-omics analysis provide new insights into the iridoids biosynthetic pathway. Front Plant Sci. 2025 Jun 19;16:1607226. doi: [10.3389/fpls.2025.1607226](https://pmc.ncbi.nlm.nih.gov/articles/PMC12222090/). PMID: 40612608; PMCID: PMC12222090.
 
 
