@@ -173,7 +173,11 @@ fpegs.py genome.fasta \ #输入预测的基因组
 -----------
 [1] CN115881217A，张兴国、程圣启、李三，[一种快速预测真核生物基因结构的方法和系统](https://wenku.baidu.com/view/a7f8a891757f5acfa1c7aa00b52acfc788eb9f9f.html?fr=aladdin266&ind=1&aigcsid=0&qtype=0&lcid=1&queryKey=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B&verifyType=undefined&_wkts_=1760340272493&bdQuery=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B)，中国，2022-12-13
 
-[2] Luo X, Shua Z, Zhao D, Liu B, Luo H, Chen Y, Meng D, Song Z, Yang Q, Wang Z, Tang D, Zhang X, Zhang J, Ma K, Yao W. Genome assembly of pomegranate highlights structural variations driving population differentiation and key loci underpinning cold adaption. Hortic Res. 2025 Jan 21;12(5):uhaf022. doi: [10.1093/hr/uhaf022](https://pmc.ncbi.nlm.nih.gov/articles/PMC11979328/). PMID: 40206514; PMCID: PMC11979328.
+## Application results
+-----------
+[1] Luo X, Shua Z, Zhao D, Liu B, Luo H, Chen Y, Meng D, Song Z, Yang Q, Wang Z, Tang D, Zhang X, Zhang J, Ma K, Yao W. Genome assembly of pomegranate highlights structural variations driving population differentiation and key loci underpinning cold adaption. Hortic Res. 2025 Jan 21;12(5):uhaf022. doi: [10.1093/hr/uhaf022](https://pmc.ncbi.nlm.nih.gov/articles/PMC11979328/). PMID: 40206514; PMCID: PMC11979328.
+[2] Chen P, Huang Z, Yin M, Wen YX, Jiang Q, Huang P, Qian R, Hong X, Zhu K, Xiao B, Chen M, Li S, Huang F, Han LT. The Hedyotis diffusa chromosome-level genome and multi-omics analysis provide new insights into the iridoids biosynthetic pathway. Front Plant Sci. 2025 Jun 19;16:1607226. doi: [10.3389/fpls.2025.1607226](https://pmc.ncbi.nlm.nih.gov/articles/PMC12222090/). PMID: 40612608; PMCID: PMC12222090.
+
 
 ## Forecast results
 |物种中文名称|注释方法|线程数目（CPU/h）|基因组大小（Mb）|congtig序列数目|基因数目|平均CDS长度|蛋白质BUSCOs完整性（%）|	蛋白质功能注释率（%）|
