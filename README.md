@@ -179,6 +179,8 @@ fpegs.py genome.fasta \ #输入预测的基因组
 
 [2] Chen P, Huang Z, Yin M, Wen YX, Jiang Q, Huang P, Qian R, Hong X, Zhu K, Xiao B, Chen M, Li S, Huang F, Han LT. The Hedyotis diffusa chromosome-level genome and multi-omics analysis provide new insights into the iridoids biosynthetic pathway. Front Plant Sci. 2025 Jun 19;16:1607226. doi: [10.3389/fpls.2025.1607226](https://pmc.ncbi.nlm.nih.gov/articles/PMC12222090/). PMID: 40612608; PMCID: PMC12222090.
 
+[3] Wang, Gangzheng and Gao, Ziyan and Xing, Jiajiao and Deng, Zeyu and Yan, Lianlian and Zhang, Chenghua and Xu, Jianping and Deng, Wangqiu, Genomic and Transcriptomic Insights on Lignocellulose Degradation, High Temperature Adaptation and Triterpene Biosynthesis in Ganoderma Colossus. Available at SSRN: [https://ssrn.com/abstract=5276061[(https://webofscience.clarivate.cn/wos/woscc/full-record/WOS:000871934300001) or [http://dx.doi.org/10.2139/ssrn.5276061](https://webofscience.clarivate.cn/wos/woscc/full-record/WOS:000871934300001)
+
 
 ## Forecast results
 |物种中文名称|注释方法|线程数目（CPU/h）|基因组大小（Mb）|congtig序列数目|基因数目|平均CDS长度|蛋白质BUSCOs完整性（%）|	蛋白质功能注释率（%）|说明|
