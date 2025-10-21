@@ -7,7 +7,7 @@ Eukaryotic gene structure prediction
 
 （3）有很多课调节的接口，方便优化注释结果。
 
-目前完成了几十个基因组的注释。欢迎大家测试和提问。
+目前完成了几十个基因组的注释。欢迎大家测试和提问（后续会推出docker版本）。
 ## Third-party
 -----------
 
@@ -52,7 +52,7 @@ cd ..
 chmod 755 fpegs.py
 cd pegs
 #Modify software configuration files, or add related software to environment variables.
-vi config.py #编辑文献，配置相关软件和数据库
+vi config.py #编辑文件，配置相关软件和数据库
 ```
 ## Quick usage
 ```
