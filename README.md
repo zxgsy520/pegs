@@ -20,7 +20,7 @@ pegs package includes some third-party software:
   * [scipy](https://github.com/scipy/scipy)
 * [R](https://www.r-project.org/)
 * [biotool](https://github.com/zxgsy520/biotool)
-* [gffvert](https://github.com/zxgsy520/gffvert)
+* [gffvert](https://github.com/zxgsy520/gffvert) #使用最新版本的，上传国家数据才不会报错（国家数据与NCBI的格式有差异）
 * [metaeuk](https://github.com/soedinglab/metaeuk)
 * [miniprot](https://github.com/lh3/miniprot)
 * [eviann](https://github.com/alekseyzimin/EviAnn_release)
@@ -39,6 +39,7 @@ pegs package includes some third-party software:
 
 ## Model Website
 Augustus Model:[https://github.com/zxgsy520/augustus_model](https://github.com/zxgsy520/augustus_model)  #训练好的模型，可以下载使用（目前没有上传完，有需要可联系我们）
+#后续我们将推出更高质量的模型
 GlimmerHMM  Model: （待上传）
 
 ## Installation
