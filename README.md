@@ -172,7 +172,7 @@ fpegs.py genome.fasta \ #输入预测的基因组
 ```
 ## References
 -----------
-[1] CN115881217A，张兴国、程圣启、李三，[一种快速预测真核生物基因结构的方法和系统](https://wenku.baidu.com/view/a7f8a891757f5acfa1c7aa00b52acfc788eb9f9f.html?fr=aladdin266&ind=1&aigcsid=0&qtype=0&lcid=1&queryKey=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B&verifyType=undefined&_wkts_=1760340272493&bdQuery=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B)，中国，2022-12-13
+[1] 张兴国,程圣启,李三.[一种快速预测真核生物基因结构的方法和系统](https://wenku.baidu.com/view/a7f8a891757f5acfa1c7aa00b52acfc788eb9f9f.html?fr=aladdin266&ind=1&aigcsid=0&qtype=0&lcid=1&queryKey=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B&verifyType=undefined&_wkts_=1760340272493&bdQuery=%E7%9C%9F%E6%A0%B8%E7%94%9F%E7%89%A9%E5%9F%BA%E5%9B%A0%E7%BB%93%E6%9E%84%E9%A2%84%E6%B5%8B):CN202211594303.1[P].CN115881217A[2025-11-18].
 
 ## Application results
 -----------
