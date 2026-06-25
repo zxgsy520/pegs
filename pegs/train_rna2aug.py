@@ -8,15 +8,15 @@ import logging
 import argparse
 
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../"))
-from gfungi.config import *
-from gfungi.common import check_paths, mkdir, check_path, get_version
-from thirdparty.dagflow import DAG, Task, ParallelTask, do_dag
-from thirdparty.seqkit.split import seq_split
+from pegs.config import *
+from pegs.common import check_paths, mkdir, check_path, get_version
+from dagflow import DAG, Task, ParallelTask, do_dag
+from seqkit.split import seq_split
 
 LOG = logging.getLogger(__name__)
 __author__ = ("Xingguo Zhang",)
 __email__ = "invicoun@foxmail.com"
-__version__ = "v1.0.0"
+__version__ = "v1.1.0"
 
 
 AUGUSTUS_CONFIG = "/Work/pipeline/software/Base/augustus/lastest/config"
@@ -46,7 +46,14 @@ perl {scripts}/computeFlankingRegion.pl {gtf}
     return int(flank.strip())
 
 
-def create_first_train_task(gtf, genome, flank, species, job_type, work_dir):
+def create_first_train_task(gtf, genome, species, job_type, work_dir):
+
+
+    if gtf.endswith(".gtf"):
+        #x = "{scripts}/gtf2gff.pl {gtf} --out=genome.gff3".format(scripts=AUGUSTUS_SCRIPTS, gtf=gtf)
+        x = "cp {gtf} genome.gff3".format(gtf=gtf)
+    else:
+        x = "cp {gtf} genome.gff3".format(gtf=gtf)
 
     task = Task(
         id="train1",
@@ -56,10 +63,25 @@ def create_first_train_task(gtf, genome, flank, species, job_type, work_dir):
         script="""
 export AUGUSTUS_CONFIG_PATH={augustus_config}
 export PATH={augustus}:$PATH
-perl {scripts}/gff2gbSmallDNA.pl {gtf} {genome} {flank} tmp.gb
-cp tmp.gb bonafide.gb
-#perl {scripts}/filterGenesIn_mRNAname.pl {gtf} tmp.gb > bonafide.gb
+{x}
+{gffread}/gffread genome.gff3 -g {genome} -x raw-cds.fa
+#过滤异常的CDS
+{bin}/gffvert cds2aa raw-cds.fa >bonafide.faa
+#取冗余
+{cdhit}/cd-hit -i bonafide.faa -o uniclean.faa  -c 0.90 -n 5 -d 0 -T 6 -M 20000 -aS 0.90
+grep ">" uniclean.faa|sed 's/>//g' >uniclean.id
+{bin}/gffvert gff2keep genome.gff3 --keepids uniclean.id --mRNA >clean.gff
+
+#格式转换
+perl {scripts}/gff2gbSmallDNA.pl clean.gff {genome} 1000 genes.raw.gb
+#尝试训练，捕捉错误
 perl {scripts}/new_species.pl --species={species}
+etraining --species={species} --stopCodonExcludedFromCDS=false genes.raw.gb 2> train.err
+#过滤掉可能错误掉基因结构
+cat train.err |sed 's/in sequence /*/' |sed 's/: /*/'|cut -d "*" -f2 > badgenes.lst
+perl {scripts}/filterGenes.pl badgenes.lst genes.raw.gb > bonafide.gb
+
+#perl {scripts}/randomSplit.pl bonafide.gb 100 #100为测试集数，其余为训练集
 etraining --species={species} bonafide.gb &> bonafide.out
 #第一次etraining, 确定gb文件是否包含终止密码子
 {bin}/augtool rm_stop_codon bonafide.out -gb bonafide.gb --species {species} --aug_config {augustus_config}
@@ -67,14 +89,16 @@ etraining --species={species} bonafide.gb &> bonafide.out
             augustus_config=AUGUSTUS_CONFIG,
             scripts=AUGUSTUS_SCRIPTS,
             bin=BIN,
+            gffread=GFFREAD_BIN,
+            cdhit=CDHIT,
+            x=x,
             gtf=gtf,
             genome=genome,
-            flank=flank,
             species=species
         )
     )
 
-    return task, os.path.join(work_dir, 'bonafide.gb')
+    return task, os.path.join(work_dir, "bonafide.gb")
 
 
 def create_second_train_task(species, genbank, job_type, work_dir, ngene=600, nmax=2000):
@@ -209,13 +233,12 @@ def run_training_aug(genome, gff, species, ntest, nmax, kfold, work_dir,
         "database": OrderedDict()
     }
 
-    flank = check_flanking(gff)
+    #flank = check_flanking(gff)
     dag = DAG("training_aug")
 
     train1_task, genbank = create_first_train_task(
         gtf=gff,
         genome=genome,
-        flank=flank,
         species=species,
         job_type=job_type,
         work_dir=os.path.join(work_dir, "01_train1")
@@ -342,5 +365,5 @@ contact:  %s <%s>\
     training_aug(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

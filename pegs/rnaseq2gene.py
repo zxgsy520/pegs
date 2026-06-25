@@ -16,7 +16,7 @@ from pegs.common import check_paths, mkdir, check_path, read_tsv
 LOG = logging.getLogger(__name__)
 __author__ = ("Xingguo Zhang",)
 __email__ = "invicoun@foxmail.com"
-__version__ = "v1.0.0"
+__version__ = "v1.0.1"
 
 PYTHON_BIN ="/Work/pipeline/software/Base/miniconda/v4.10.3/bin/"
 FASTP_BIN = "/Work/pipeline/software/Base/fastp/v0.23.1/"
@@ -151,7 +151,8 @@ def create_merge_bam_task(bams, prefix="out", job_type="sge", work_dir="", threa
         script="""
 export PATH=/Work/pipeline/software/Base/samtools/samtools/:$PATH
 samtools merge --threads {thread} -h {bam1} {prefix}.merge.bam {bams}
-samtools sort --threads {thread} -m 4G -n {prefix}.merge.bam -o {prefix}.sorted.bam
+samtools sort --threads {thread} -m 4G {prefix}.merge.bam -o {prefix}.sorted.bam
+#samtool添加-n，表示按read 名称排序
 rm -rf {prefix}.merge.bam */*.sorted.bam
 """.format(samtools=SAMTOOLS_BIN,
             thread=thread,
@@ -316,12 +317,15 @@ cut -f 1 {genome} >genome.fasta
   -t {clean_rnaseq} \\
   {temp} --CPU {thread} --ALIGNERS minimap2 #gmap大基因不能使用gmap
 python {script}/rename_pasa_gtf.py pasa.sqlite.pasa_assemblies.gtf >pasa_assemblies.rename.gtf
-cp pasa.sqlite.pasa_assemblies.gff3 {out_dir}/{prefix}.pasa.gff3
+{gffread}/gffread --gtf pasa_assemblies.rename.gtf -o pasa_assemblies.rename.gff
+#cp pasa.sqlite.pasa_assemblies.gff3 {out_dir}/{prefix}.pasa.gff3
+cp pasa_assemblies.rename.gff {out_dir}/{prefix}.pasa.gff3
 """.format(pasa=PASA_BIN,
             gmap=GMAP_BIN,
             minimap2=MINIMAP_BIN,
             samtools=SAMTOOLS_BIN,
             script=SCRIPTS,
+            gffread=GFFREAD_BIN,
             prefix=prefix,
             genome=genome,
             rnaseq=rnaseq,

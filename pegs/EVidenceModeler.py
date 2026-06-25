@@ -22,16 +22,16 @@ __version__ = "v1.2.2"
 
 
 CONFIG = """\
-PROTEIN\tMetaEuk\t2
-PROTEIN\tminiprot\t2
+PROTEIN\tMetaEuk\t5
+PROTEIN\tminiprot\t6
 PROTEIN\tbusco\t10
 ABINITIO_PREDICTION\tGeneMark\t1
 ABINITIO_PREDICTION\tGlimmerHMM\t2
-ABINITIO_PREDICTION\tAugustus\t4
-TRANSCRIPT\tassembler-pasa.sqlite\t12
+ABINITIO_PREDICTION\tAugustus\t6
+TRANSCRIPT\tassembler-pasa.sqlite\t10
 OTHER_PREDICTION\ttransdecoder\t8
 OTHER_PREDICTION\tGMST\t8
-OTHER_PREDICTION\tEviAnn\t10
+OTHER_PREDICTION\tEviAnn\t12
 """
 
 #CONFIG = """\
@@ -64,7 +64,7 @@ def create_evm_task(genome, predict_gffs, protein_gffs, transcript_gffs, pasa_gf
         
     tran1 = ""
     if transcript_gffs:
-        tran1 = "cat {transcript_gffs} >> predict.gff".format(" ".join(transcript_gffs=transcript_gffs))
+        tran1 = "cat {transcript_gffs} >> predict.gff".format(transcript_gffs=" ".join(transcript_gffs))
 
     pasa1 = ""
     pasa2 = ""
@@ -135,7 +135,8 @@ def create_evm_tasks(genome, predict_gffs, protein_gffs, transcript_gffs, pasa_g
     pasa1 = ""
     pasa2 = ""
     if pasa_gffs:
-        pasa1 = 'cat {pasa_gffs} |sed "s/cDNA_match/EST_match/g" >transcript_alignments.gff3'.format(pasa_gffs=" ".join(pasa_gffs))
+        #pasa1 = 'cat {pasa_gffs} |sed "s/cDNA_match/EST_match/g" >transcript_alignments.gff3'.format(pasa_gffs=" ".join(pasa_gffs))
+        pasa1 = 'cat {pasa_gffs} |sed "s/exon/CDS/g" >transcript_alignments.gff3'.format(pasa_gffs=" ".join(pasa_gffs))
         pasa2 = "--transcript_alignments transcript_alignments.gff3"
     protein1 = ""
     protein2 = ""        
@@ -191,7 +192,7 @@ rm -rf evm shell genome.fasta
     return task, os.path.join(out_dir, "%s.evm.gff3" % prefix)
 
 
-def create_busco_task(genome, gff, prefix, busco_database="", thread=10, job_type="sge",
+def create_busco_task(genome, gff, prefix, busco_database="", translation_table=1, thread=10, job_type="sge",
                       work_dir="", out_dir=""):
 
     task = Task(
@@ -200,20 +201,24 @@ def create_busco_task(genome, gff, prefix, busco_database="", thread=10, job_typ
         type=job_type,
         option="-pe smp %s %s" % (thread, QUEUE),
         script="""
-{gffread}/gffread {gff} -g {genome} -y {prefix}.protein.fasta
+{gffread}/gffread {gff} -g {genome} -x {prefix}.CDS.fasta
+{bin}/gffvert cds2aa {prefix}.CDS.fasta --transl_table {translation_table} --force >{prefix}.protein.fasta
+
 export PATH="{busco_bin}:{augustus_bin}:$PATH"
 export AUGUSTUS_CONFIG_PATH="{augustus_config}"
 export BUSCO_CONFIG_FILE="{busco_config}"
 busco --cpu {thread} --mode proteins -force --lineage_dataset {busco_database} \\
   --offline --in {prefix}.protein.fasta --out {prefix}
 cat {prefix}/short_summary.specific.*.txt > {prefix}.evm_busco.tsv
-rm -rf busco_downloads {prefix}.protein.fasta
+rm -rf busco_downloads {prefix}.protein.fasta {prefix}.CDS.fasta
 """.format(gffread=GFFREAD_BIN,
+            bin=BIN,
             busco_bin=BUSCO_BIN,
             augustus_bin=AUGUSTUS_BIN,
             augustus_config=AUGUSTUS_CONFIG_PATH,
             busco_config=BUSCO_CONFIG_FILE,
             busco_database=busco_database,
+            translation_table=translation_table,
             gff=gff,
             genome=genome,
             prefix=prefix,
@@ -225,7 +230,7 @@ rm -rf busco_downloads {prefix}.protein.fasta
 
 
 def run_EVidenceModeler(genome, prefix, predict_gffs, protein_gffs, transcript_gffs, pasa_gffs,
-                        busco_database, job_type, work_dir, out_dir, thread=10, concurrent=10,
+                        busco_database, job_type, work_dir, out_dir, translation_table=1, thread=10, concurrent=10,
                         refresh=30, kingdom="fungi", no_split=False):
     
     genome = check_path(genome)
@@ -302,6 +307,7 @@ def run_EVidenceModeler(genome, prefix, predict_gffs, protein_gffs, transcript_g
     dag.add_task(evm_task)
     busco_task = create_busco_task(
         genome=genome,
+        translation_table=translation_table,
         gff=gff,
         prefix=prefix,
         thread=thread,
@@ -331,6 +337,8 @@ def add_hlep_args(parser):
         help="Input pasa annotation results(gff).")
     parser.add_argument("--prefix", metavar="STR", type=str, default="ZXG",
         help="Input sample name.")
+    parser.add_argument("--translation_table", metavar="INT", type=int, default=1,
+        help="Set genetic code(https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=cgencodes), default=1")
     parser.add_argument("-k", "--kingdom", metavar="STR", type=str, default="fungi",
         choices=["fungi", "plant", "animal", "eukaryota", "actinopterygii"],
         help="Kingdom of the sample (fungi, plant, animal, eukaryota, actinopterygii), default=fungi")
@@ -380,7 +388,7 @@ contact:  %s <%s>\
     run_EVidenceModeler(genome=args.genome, prefix=args.prefix, predict_gffs=args.predict_gffs,
                         protein_gffs=args.protein_gffs, transcript_gffs=args.transcript_gffs,
                         pasa_gffs=args.pasa_gffs, busco_database=args.busco_database,
-                        job_type=args.job_type, work_dir=args.work_dir,
+                        translation_table=args.translation_table, job_type=args.job_type, work_dir=args.work_dir,
                         out_dir=args.out_dir, thread=args.thread, concurrent=args.concurrent,
                         refresh=args.refresh, kingdom=args.kingdom, no_split=args.no_split)
 

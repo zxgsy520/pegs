@@ -68,13 +68,66 @@ cp {prefix}.augustus.gff3 {out_dir}
     return task, os.path.join(out_dir, "%s.augustus.gff3" % prefix)
 
 
+def create_busco_task(genome, gff, prefix, busco_database="", translation_table=1, thread=10, job_type="sge",
+                      work_dir="", out_dir=""):
 
-def run_augustus(genome, introns_gff, prefix, species, job_type,
+    task = Task(
+        id="aug_busco",
+        work_dir=work_dir,
+        type=job_type,
+        option="-pe smp %s %s" % (thread, QUEUE),
+        script="""
+{gffread}/gffread {gff} -g {genome} -x {prefix}.CDS.fasta
+{bin}/gffvert cds2aa {prefix}.CDS.fasta --transl_table {translation_table} --force >{prefix}.protein.fasta
+
+export PATH="{busco_bin}:{augustus_bin}:$PATH"
+export AUGUSTUS_CONFIG_PATH="{augustus_config}"
+export BUSCO_CONFIG_FILE="{busco_config}"
+busco --cpu {thread} --mode proteins -force --lineage_dataset {busco_database} \\
+  --offline --in {prefix}.protein.fasta --out {prefix}
+cat {prefix}/short_summary.specific.*.txt > {prefix}.busco.tsv
+cp {prefix}.busco.tsv {out_dir}/{prefix}.augustus_busco.tsv
+rm -rf busco_downloads {prefix}.protein.fasta {prefix}.CDS.fasta
+""".format(gffread=GFFREAD_BIN,
+            bin=BIN,
+            busco_bin=BUSCO_BIN,
+            augustus_bin=AUGUSTUS_BIN,
+            augustus_config=AUGUSTUS_CONFIG_PATH,
+            busco_config=BUSCO_CONFIG_FILE,
+            translation_table=translation_table,
+            busco_database=busco_database,
+            gff=gff,
+            genome=genome,
+            prefix=prefix,
+            thread=thread,
+            out_dir=out_dir)
+    )
+
+    return task
+
+
+def run_augustus(genome, introns_gff, prefix, species, busco_database, translation_table=1, job_type="sge",
                  thread=10, concurrent=10, refresh=30, work_dir="", out_dir=""):
 
     genome = check_path(genome)
     work_dir = mkdir(work_dir)
     out_dir = mkdir(out_dir)
+    
+    if busco_database:
+        try:
+            try:
+                temp = check_path("%s_odb12/refseq_db.faa" % busco_database) #输入路径
+            except:
+                temp = check_path("%s_odb12/refseq_db.faa.gz" % busco_database) #输入路径
+        except:
+            try:
+                temp = check_path("%s/%s_odb12/refseq_db.faa" % (BUSCO_DB, busco_database)) #输入分类名称
+            except:
+                temp = check_path("%s/%s_odb12/refseq_db.faa.gz" % (BUSCO_DB, busco_database)) #输入分类名称
+            busco_database = "%s/%s" % (BUSCO_DB, busco_database)
+    else:
+        temp = check_path("%s/%s_odb12/refseq_db.faa" % (BUSCO_DB, species))
+        busco_database = "%s/%s" % (BUSCO_DB, species)
 
     if introns_gff:
         introns_gff = check_path(introns_gff)
@@ -92,6 +145,18 @@ def run_augustus(genome, introns_gff, prefix, species, job_type,
             thread=thread
         ) 
         dag.add_task(task)
+        busco_task = create_busco_task(
+            genome=genome,
+            gff=gff,
+            translation_table=translation_table,
+            prefix=prefix,
+            thread=thread,
+            job_type=job_type,
+            work_dir=work_dir,
+            out_dir=out_dir,
+            busco_database=busco_database)
+        dag.add_task(busco_task)
+        busco_task.set_upstream(task)
         do_dag(dag, concurrent_tasks=concurrent, refresh_time=refresh)
     else:
         LOG.info("Augustus model %s does not exist, please train the model first" % species)
@@ -111,8 +176,12 @@ def add_hlep_args(parser):
         help="Input gff file for introns(introns.f.gff)")
     parser.add_argument("-p", "--prefix", metavar="STR", type=str, default="ZXG",
         help="Input result file prefix(ZXG)")
+    parser.add_argument("--translation_table", metavar="INT", type=int, default=1,
+        help="Set genetic code(https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=cgencodes), default=1")
     parser.add_argument("-s", "--species", metavar="STR", type=str,  default=False,
         help="Input the species name of the sample.")
+    parser.add_argument("-db", "--busco_database", metavar="STR", type=str, default="",
+        help="Set up Busco database,default=fungi")
     parser.add_argument("-t", "--thread", metavar="INT", type=int, default=4,
         help="Set the number of threads(default: 4)")
     parser.add_argument("--concurrent", metavar="INT", type=int, default=10,
@@ -152,7 +221,8 @@ contact:  %s <%s>\
     args = add_hlep_args(parser).parse_args()
 
     run_augustus(genome=args.genome, introns_gff=args.introns_gff,
-        prefix=args.prefix, species=args.species, thread=args.thread,
+        prefix=args.prefix, translation_table=args.translation_table,
+        species=args.species, busco_database=args.busco_database, thread=args.thread,
         job_type=args.job_type, work_dir=args.work_dir, out_dir=args.out_dir,
         concurrent=args.concurrent, refresh=args.refresh)
 
