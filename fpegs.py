@@ -19,10 +19,10 @@ from pegs.de_novo_ann import *
 LOG = logging.getLogger(__name__)
 __author__ = ("Xingguo Zhang",)
 __email__ = "invicoun@foxmail.com"
-__version__ = "v1.2.1"
+__version__ = "v1.2.3"
 
 
-def create_homo_ann_task(genome, protein, cds, rna_list, prefix, work_dir, out_dir,
+def create_homo_ann_task(genome, protein, cds, rna_list, prefix, translation_table=1, work_dir="", out_dir="",
                          job_type="local", thread=10, concurrent=10, refresh=30):
     if cds:
         cds = "--cds %s" % cds
@@ -35,12 +35,14 @@ def create_homo_ann_task(genome, protein, cds, rna_list, prefix, work_dir, out_d
         type="local",
         option="-pe smp 1 %s" % QUEUE,
         script="""
-python {root}/pegs/homo_ann.pyc {genome} --protein {protein} \\
-  --prefix {prefix} {cds} {rna_list} --threads {thread} --concurrent {concurrent} \\
+python {root}/pegs/homo_ann.py {genome} --protein {protein} \\
+  --prefix {prefix} {cds} {rna_list} \\
+  --mprotein {protein} --translation_table {translation_table} --threads {thread} --concurrent {concurrent} \\
   --refresh {refresh} --job_type {job_type} --work_dir {work_dir} \\
   --out_dir {out_dir}
 rm -rf 00_genome
 """.format(root=ROOT,
+           translation_table=translation_table,
            genome=genome,
            protein=protein,
            cds=cds,
@@ -64,7 +66,7 @@ rm -rf 00_genome
 
 def create_de_novo_ann_task(genome, homo, homogff, prefix, species,
                             job_type, work_dir, out_dir, thread=10,
-                            concurrent=10, refresh=30, kingdom="fungi", minlen="50kb"):
+                            concurrent=10, refresh=30, kingdom="fungi"):
     temp = ""
     if homo:
        temp = "--homo %s --homogff %s" % (" ".join(homo), " ".join(homogff))
@@ -75,10 +77,10 @@ def create_de_novo_ann_task(genome, homo, homogff, prefix, species,
         type="local",
         option="-pe smp 1 %s" % QUEUE,
         script="""
-python {root}/pegs/de_novo_ann.pyc {genome} --prefix {prefix} \\
+python {root}/pegs/de_novo_ann.py {genome} --prefix {prefix} \\
   --species {species} --kingdom {kingdom} \\
-  --minlen {minlen} {temp} \\
-  --threads {thread} --concurrent {concurrent} --refresh {refresh} --job_type {job_type} \\
+  {temp} --threads {thread}\\
+  --concurrent {concurrent} --refresh {refresh} --job_type {job_type} \\
   --work_dir {work_dir} --out_dir {out_dir}
 rm -rf 00_genome
 """.format(root=ROOT,
@@ -87,7 +89,6 @@ rm -rf 00_genome
            prefix=prefix,
            species=species,
            kingdom=kingdom,
-           minlen=minlen,
            thread=thread,
            concurrent=concurrent,
            refresh=refresh,
@@ -99,8 +100,8 @@ rm -rf 00_genome
     return task, os.path.join(out_dir, "%s.genemark.gff" % prefix), os.path.join(out_dir, "%s.glimmerhmm.gff" % prefix)
 
 
-def create_augustus_task(genome, introns_gff, prefix, species,
-                         job_type, work_dir, out_dir, thread=10):
+def create_augustus_task(genome, introns_gff, prefix, species, translation_table=1,  busco_database="",
+                         job_type="sge", work_dir="", out_dir="", thread=10):
     temp = ""
     if introns_gff:
        temp = "--introns_gff %s" % introns_gff
@@ -112,13 +113,16 @@ def create_augustus_task(genome, introns_gff, prefix, species,
         option="-pe smp 1 %s" % QUEUE,
         script="""
 python {root}/pegs/run_augustus.py {genome}\\
-  --prefix {prefix} --species {species} {temp}\\
-  --thread {thread} --job_type {job_type} --work_dir {work_dir} --out_dir {out_dir}
+  --prefix {prefix} --species {species} --translation_table {translation_table} --busco_database {busco_database} \\
+  {temp} --thread {thread} --job_type {job_type} \\
+  --work_dir {work_dir} --out_dir {out_dir}
 """.format(root=ROOT,
+           translation_table=translation_table,
            genome=genome,
            temp=temp,
            prefix=prefix,
            species=species,
+           busco_database=busco_database,
            thread=thread,
            job_type=job_type,
            work_dir=work_dir,
@@ -128,7 +132,8 @@ python {root}/pegs/run_augustus.py {genome}\\
     return task, os.path.join(out_dir, "%s.augustus.gff3" % prefix)
 
 
-def create_evm_task(genome, predict_gffs, protein_gffs, transcripts, pasa, prefix, busco_database="", job_type="local",
+def create_evm_task(genome, predict_gffs, protein_gffs, transcripts, pasa, prefix, busco_database="",
+                    job_type="local", translation_table=1,
                       work_dir="", out_dir="", kingdom="fungi", thread=10, no_split=False):
 
     temp1 = ""
@@ -136,6 +141,7 @@ def create_evm_task(genome, predict_gffs, protein_gffs, transcripts, pasa, prefi
     temp3 = ""
     if len(protein_gffs) >= 1:
         temp1 = "--protein_gffs {protein_gffs}".format(protein_gffs=" ".join(protein_gffs))
+
     if pasa:
         temp2 = "--pasa_gffs {pasa}".format(pasa=pasa)
     if len(transcripts) >= 1:
@@ -157,7 +163,7 @@ python {root}/pegs/EVidenceModeler.py {genome} \\
   --predict_gffs {predict_gffs} {temp1} {temp2} \\
   {temp3} --prefix {prefix} --kingdom {kingdom} {x1} \\
   --thread {thread} --job_type {job_type} {x}\\
-  --work_dir {work_dir} --out_dir {out_dir}
+  --translation_table {translation_table} --work_dir {work_dir} --out_dir {out_dir}
 """.format(root=ROOT,
            genome=genome,
            predict_gffs=" ".join(predict_gffs),
@@ -167,6 +173,7 @@ python {root}/pegs/EVidenceModeler.py {genome} \\
            x=x,
            x1=x1,
            prefix=prefix,
+           translation_table=translation_table,
            kingdom=kingdom,
            thread=thread,
            job_type=job_type,
@@ -177,8 +184,8 @@ python {root}/pegs/EVidenceModeler.py {genome} \\
     return task, os.path.join(out_dir, "%s.evm.gff3" % prefix)
 
 
-def create_PSI_task(genome, gff, prefix, kingdom, busco_database="", job_type="local",
-                    work_dir="", out_dir=""):
+def create_PSI_task(genome, gff, prefix, kingdom, busco_database="", translation_table=1,
+                    job_type="local", work_dir="", out_dir=""):
 
     x = ""
     if busco_database:
@@ -192,11 +199,12 @@ def create_PSI_task(genome, gff, prefix, kingdom, busco_database="", job_type="l
         script="""
 python {root}/pegs/ransposonPSI.py {genome}\\
   --gff3 {gff} --prefix {prefix} --kingdom {kingdom} {x}\\
-  --job_type {job_type} --work_dir {work_dir} --out_dir {out_dir}
+  --translation_table {translation_table} --job_type {job_type} --work_dir {work_dir} --out_dir {out_dir}
 """.format(root=ROOT,
            genome=genome,
            gff=gff,
            prefix=prefix,
+           translation_table=translation_table,
            kingdom=kingdom,
            x=x,
            job_type=job_type,
@@ -225,7 +233,7 @@ def get_gff_class(gffs, work_dir):
             r["Denovo3"] = g
         elif g.endswith("metaeuk.gff") or g.endswith("metaeuk.gff3"):
             r["Homology"] = g
-        elif g.endswith("transcript.gff3") or g.endswith("transcript.gff"):
+        elif g.endswith("transdecoder.gff3") or g.endswith("transdecoder.gff"):
             r["RNA"] = g
         else:
             continue
@@ -266,8 +274,8 @@ rm -rf gffStat.out
 
 
 def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff, prefix, species,
-              busco_database, job_type, work_dir, out_dir, thread=10, concurrent=10,
-              refresh=30, kingdom="fungi", minlen="50kb", no_split=False):
+              busco_database, job_type, work_dir, out_dir, translation_table=1, thread=10, concurrent=10, 
+              refresh=30, kingdom="fungi", no_split=False):
 
     genome = check_path(genome)
     protein = check_path(protein)
@@ -323,6 +331,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
     homo_task, metaeuk_gff, miniprot_gff = create_homo_ann_task(
         genome=genome,
         protein=protein,
+        translation_table=translation_table,
         cds=cds,
         rna_list=rna_list,
         prefix=prefix,
@@ -351,8 +360,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         thread=thread,
         concurrent=concurrent,
         refresh=refresh,
-        kingdom=kingdom,
-        minlen=minlen
+        kingdom=kingdom
     )
     dag.add_task(de_novo_task)
 
@@ -361,6 +369,8 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         introns_gff=introns_gff,
         prefix=prefix,
         species=species,
+        translation_table=translation_table,
+        busco_database=busco_database,
         job_type=job_type,
         work_dir=os.path.join(work_dir, work_dict["aug"]),
         out_dir=out_dir,
@@ -371,10 +381,10 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
     predict_gffs = [aug_gff, gmes_gff, glimmer_gff]
     transcripts = []
     try:
-        temp = check_path(os.path.join(out_dir, "%s.transcript.gff3" % prefix))
+        temp = check_path(os.path.join(out_dir, "%s.transdecoder.gff3" % prefix))
         transcripts.append(temp)
     except:
-        LOG.info("No files:%s.transcript.gff3" % prefix)
+        LOG.info("No files:%s.transdecoder.gff3" % prefix)
 
     try:
         temp = check_path(os.path.join(out_dir, "%s.gmst.gff3" % prefix))
@@ -384,6 +394,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
 
     try:
         pasa = check_path(os.path.join(out_dir, "%s.pasa.gff3" % prefix))
+        LOG.info("Discover files:%s.pasa.gff3" % prefix)
     except:
         pasa = ""
 
@@ -397,7 +408,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         busco_gff = check_path(os.path.join(out_dir, "%s.busco.gff" % prefix)) 
         protein_gffs.append(busco_gff)
     except:
-        pasa = ""
+        busco_gff = ""
 
     evm_task, evm_gff = create_evm_task(
         genome=genome,
@@ -411,6 +422,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         out_dir=out_dir,
         kingdom=kingdom,
         busco_database=busco_database,
+        translation_table=translation_table,
         thread=thread,
         no_split=no_split,
     )
@@ -424,6 +436,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         prefix=prefix,
         kingdom=kingdom,
         busco_database=busco_database,
+        translation_table=translation_table,
         job_type=job_type,
         work_dir=os.path.join(work_dir, work_dict["psi"]),
         out_dir=out_dir
@@ -465,8 +478,8 @@ def add_hlep_args(parser):
         help="Kingdom of the sample (fungi, plant, animal, eukaryota), default=fungi")
     parser.add_argument("-db", "--busco_database", metavar="STR", type=str, default="",
         help="Specify the name of the BUSCO lineage to be used(/Work/database/busco_db/odb12/fungi). default=fungi")
-    parser.add_argument("-ml", "--minlen", metavar="STR", type=str,  default="10kb",
-        help="Input filtering preserves the shortest read length, default=10kb")
+    parser.add_argument("-t", "--translation_table", metavar="INT", type=int, default=1,
+        help="Set genetic code(https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=cgencodes), default=1")
     parser.add_argument("--no_split", action="store_true", default=False,
         help="Set not to split and integrate the genome")
     parser.add_argument("--thread", metavar="INT", type=int, default=4,
@@ -511,12 +524,12 @@ contact:  %s <%s>\
     args = add_hlep_args(parser).parse_args()
 
     run_fpegs(genome=args.genome, masked=args.masked, protein=args.protein,
-              cds=args.cds, rna_list=args.rna_list, homo=args.homo,
+              cds=args.cds, rna_list=args.rna_list, homo=args.homo, translation_table=args.translation_table,
               homogff=args.homogff, introns_gff=args.introns_gff, prefix=args.prefix,
               species=args.species, busco_database=args.busco_database, thread=args.thread,
               job_type=args.job_type, work_dir=args.work_dir, out_dir=args.out_dir,
               concurrent=args.concurrent, refresh=args.refresh, kingdom=args.kingdom, 
-              minlen=args.minlen, no_split=args.no_split)
+              no_split=args.no_split)
 
 
 if __name__ == "__main__":
