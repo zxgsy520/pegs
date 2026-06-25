@@ -1,5 +1,5 @@
 # pegs
-Eukaryotic gene structure prediction
+Workflow of Eukaryotic Gene Prediction
 ## 技术特点
 （1）可以在sge集群上多节点运行，优化了部分比对方法，使之前需要几天注释的基因组，只需要几十小时甚至几小时完成注释；
 
@@ -75,7 +75,7 @@ attention:
 #如果没有转录组数据，可以使用gffread提取近源物种的转绿本
 gffread -W -y proteins.faa -w transcripts.fa -g genome.fa genome.gff  #从近源物种中提取蛋白质转绿本数据
 
-version: v1.2.1
+version: v1.3.0
 contact:  Xingguo Zhang <invicoun@foxmail.com>        
 
 positional arguments:
@@ -107,9 +107,10 @@ optional arguments:
                         Specify the name of the BUSCO lineage to be
                         used(/Work/database/busco_db/odb12/fungi).
                         default=fungi
-  -ml STR, --minlen STR #过滤短序列，提升注释的速度
-                        Input filtering preserves the shortest read length,
-                        default=10kb
+  -t INT, --translation_table INT
+                        Set genetic code(https://www.ncbi.nlm.nih.gov/Taxonomy
+                        /taxonomyhome.html/index.cgi?chapter=cgencodes),
+                        default=1   #输入真核生物对应的密码子号
   --no_split            Set not to split and integrate the genome #设置不对基因组进行分割注释
   --thread INT          Threads used to run blastp (default: 4) #设置线程数目
   --concurrent INT      Maximum number of jobs concurrent (default: 10) #设置并行任务数据
