@@ -1,13 +1,24 @@
 # pegs
 Workflow of Eukaryotic Gene Prediction
-## 技术特点
-（1）支持在SGE集群上多节点并行运行，并对同源比对软件进行更新和替换，使得原本需数天完成的基因组注释任务，如今仅需数十小时乃至数小时内即可完成。
+## Technical Features (技术特性)
+(1)支持在SGE集群上多节点并行运行，并对同源比对软件进行更新和替换，使得原本需数天完成的基因组注释任务，如今仅需数十小时乃至数小时内即可完成。
 
-（2）具备任务断点续投功能，可有效避免因单个环节报错而导致的全局重新计算，大幅节省计算资源。
+(1) Supports multi‑node parallel execution on SGE clusters, with upgraded and replaced homology search tools, reducing genome annotation time from several days to tens of hours or even a few hours.
 
-（3）提供丰富的可调参数接口，便于用户根据实际需求灵活优化注释结果。
+(2)具备任务断点续投功能，可有效避免因单个环节报错而导致的全局重新计算，大幅节省计算资源。
 
-（4）该注释方法在多数物种中均表现良好，无需转录组数据即可取得理想的注释效果（新物种还是建议测转绿组数据）。
+(2) Implements job resumption (checkpointing) to avoid full recomputation upon single‑step failures, thereby substantially saving computational resources.
+
+(3)提供丰富的可调参数接口，便于用户根据实际需求灵活优化注释结果。
+
+(3) Provides a rich set of tunable parameter interfaces, enabling users to flexibly refine annotation outcomes based on specific data characteristics or research objectives.
+
+(4) 该注释方法在多数物种中均表现良好，无需转录组数据即可取得理想的注释效果（新物种还是建议测转绿组数据）。
+
+(4) Performs robustly in most species, achieving satisfactory annotations even in the absence of transcriptome data (however, for novel or poorly characterized species, transcriptome sequencing is still recommended to improve gene structure predictions).
+
+(5) 本流程的基础架构及数据处理脚本均基于 Python 语言开发，旨在提升代码的可维护性，并为未来的功能迭代与参数调优提供便利。
+(5) The entire pipeline framework and all data processing scripts are developed in Python, ensuring high code maintainability and facilitating future feature extensions, parameter tuning, and algorithmic updates.
 
 目前完成了几十个基因组的注释。欢迎大家测试和提问（后续会推出docker版本）。
 ## Third-party
@@ -25,8 +36,8 @@ pegs package includes some third-party software:
 * [gffvert](https://github.com/zxgsy520/gffvert) #使用最新版本的，上传国家数据才不会报错（国家数据与NCBI的格式有差异）
 * [metaeuk](https://github.com/soedinglab/metaeuk)
 * [miniprot](https://github.com/lh3/miniprot) #miniprot 是李恒团队最新开发的一款同源比对软件，主打快速与高准确性。然而，与 MetaEuk 相比，其不足之处在于不支持为特定真核生物（如酵母等）定制密码子表。
-* [eviann](https://github.com/alekseyzimin/EviAnn_release)
-* [braker2](https://github.com/Gaius-Augustus/BRAKER)
+* [eviann](https://github.com/alekseyzimin/EviAnn_release) #eviann也是新引入的，对含转绿组的基因组注释会使用
+* [braker2](https://github.com/Gaius-Augustus/BRAKER)  #没有用到，主要使用里面部分perl的环境
 * [GeneMark-ES](http://topaz.gatech.edu/GeneMark/license_download.cgi)
 * [GlimmerHMM](https://ccb.jhu.edu/software/glimmerhmm/man.shtml)
 * [gffread](https://github.com/gpertea/gffread)
