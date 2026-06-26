@@ -1,11 +1,13 @@
 # pegs
 Workflow of Eukaryotic Gene Prediction
 ## 技术特点
-（1）可以在sge集群上多节点运行，优化了部分比对方法，使之前需要几天注释的基因组，只需要几十小时甚至几小时完成注释；
+（1）支持在SGE集群上多节点并行运行，并对同源比对软件进行更新和替换，使得原本需数天完成的基因组注释任务，如今仅需数十小时乃至数小时内即可完成。
 
-（2）任务可以续投，防止某个环节任务报错，又需要从头计算的资源浪费；
+（2）具备任务断点续投功能，可有效避免因单个环节报错而导致的全局重新计算，大幅节省计算资源。
 
-（3）有很多可调节的接口，方便优化注释结果。
+（3）提供丰富的可调参数接口，便于用户根据实际需求灵活优化注释结果。
+
+（4）该注释方法在多数物种中均表现良好，无需转录组数据即可取得理想的注释效果（新物种还是建议测转绿组数据）。
 
 目前完成了几十个基因组的注释。欢迎大家测试和提问（后续会推出docker版本）。
 ## Third-party
@@ -22,7 +24,7 @@ pegs package includes some third-party software:
 * [biotool](https://github.com/zxgsy520/biotool)
 * [gffvert](https://github.com/zxgsy520/gffvert) #使用最新版本的，上传国家数据才不会报错（国家数据与NCBI的格式有差异）
 * [metaeuk](https://github.com/soedinglab/metaeuk)
-* [miniprot](https://github.com/lh3/miniprot)
+* [miniprot](https://github.com/lh3/miniprot) #miniprot 是李恒团队最新开发的一款同源比对软件，主打快速与高准确性。然而，与 MetaEuk 相比，其不足之处在于不支持为特定真核生物（如酵母等）定制密码子表。
 * [eviann](https://github.com/alekseyzimin/EviAnn_release)
 * [braker2](https://github.com/Gaius-Augustus/BRAKER)
 * [GeneMark-ES](http://topaz.gatech.edu/GeneMark/license_download.cgi)
