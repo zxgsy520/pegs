@@ -1,5 +1,9 @@
 # pegs
 Workflow of Eukaryotic Gene Prediction
+
+Tech for a better life, Open Source for a brighter future.
+
+We are committed to promoting technological progress. This project is open for academic research and personal learning, but commercial use is strictly prohibited.
 ## Technical Features (技术特性)
 (1)支持在SGE集群上多节点并行运行，并对同源比对软件进行更新和替换，使得原本需数天完成的基因组注释任务，如今仅需数十小时乃至数小时内即可完成。
 
