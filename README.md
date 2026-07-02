@@ -189,6 +189,17 @@ fpegs.py genome.fasta \ #输入预测的基因组
   --busco_database diptera \  #设置用于评估的busco数据
   --job_type sge --work_dir fast_work --out_dir fast_out 
 ```
+## Release Notes
+### V1.3.0 
+The splitting method has been changed from "per contig" to "by file size" (default 20 Mb) to accommodate second‑generation assembled genomes.
+
+Added Miniprot as a homology‑based alignment annotation module.
+
+Added support for invoking EVIANN for annotation when transcriptome data are available.
+
+Added codon parameter configuration to broaden the applicability to more species.
+
+
 ## Copyright and Patent Notice（版权和专利声明）
 本项目包含受保护的方法与代码，相关权利信息如下：
 
