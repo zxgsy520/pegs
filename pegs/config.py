@@ -9,16 +9,19 @@ BIN = os.path.join(ROOT, "bin")
 SCRIPTS = os.path.join(ROOT, "scripts")
 GFFSTAT = os.path.join(ROOT, "other/gffStat/gffStat.py")
 QUEUE = "-q all.q"
+MAP_PATH = "/Work:/Work" #设置docker的映射路径
+
 
 #同源注释软件和数据库
 METAEUK_BIN = "/Work/pipeline/software/meta/metaeuk/v5.34/bin/"
 MINIPROT_BIN = "/Work/pipeline/software/Base/miniprot/v0.12/"
 UNIPROT_DB = "/Work/database/SwissProt/202102/uniprot_sprot.fasta"
 EVIANN_BIN = "/Work/pipeline/software/Base/eviann/v2.0.3/bin/"
+CDHIT = "/Work/pipeline/software/meta/cdhit/v4.8.1/"
 
 #从头预测需要的软件
 BRAKER_BIN = "/Work/pipeline/software/Base/braker2/v2.1.6/bin/"    #输入依赖的软件路径
-GMES_BIN = "/Work/pipeline/software/meta/gmes/v4.68/"
+GMES_BIN = "/Work/pipeline/software/meta/gmes/latest"
 GLIMMERHMM = "/Work/pipeline/software/Base/GlimmerHMM/v3.0.4"
 
 GFFREAD_BIN = "/Work/pipeline/software/Base/gffread/v0.12.7/"
@@ -27,6 +30,7 @@ SEQCLEAN_BIN = "/Work/pipeline/software/Base/seqclean/v1.0.0/"
 #STAR_BIN = "/Work/pipeline/software/meta/STAR/v2.7.9a/"
 #SAMTOOLS_BIN = "/Work/pipeline/software/Base/samtools/samtools/bin/"
 PASA_BIN = "/Work/pipeline/software/Base/pasa/v2.5.2/bin/"
+PASA_MAIN = "/Work/pipeline/software/Base/pasa/v2.5.2/opt/pasa-2.5.2/"
 PASA_UTILITIES = "/Work/pipeline/software/Base/pasa/v2.5.2/opt/pasa-2.5.2/misc_utilities/"
 TRANSDECODER_BIN = "/Work/pipeline/software/Base/pasa/v2.5.2/opt/transdecoder/"
 
@@ -40,4 +44,4 @@ AUGUSTUS_EXT = os.path.join(ROOT, "pegs/extrinsic.cfg")
 BRAKER2_BIN = "/Work/pipeline/software/Base/braker2/v2.1.6/bin/"
 BUSCO_CONFIG_FILE = "/Work/pipeline/software/Base/busco/lastest/bin/config/myconfig.ini"
 PSI_BIN = "/Work/pipeline/software/Base/ransposonPSI/v1.0.1/bin/"
-
+AGAT_DOCKRE = "quay.io/biocontainers/agat:0.8.0--pl5262hdfd78af_0"

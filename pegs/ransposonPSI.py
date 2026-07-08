@@ -91,14 +91,14 @@ grep -v ^'//' {prefix}.TPSI.topHits | cut -f 6 > {prefix}.transoposonPSI.ids
 awk '$4*$5*$6==0' {prefix}.noPSI.CDS.check >{prefix}.checkWrong.ids
 cut -f 1 {prefix}.checkWrong.ids |sed '1d' > {prefix}.Wrong.ids
 {bin}/gffvert gff2rmgene {prefix}.noPSI.gff --rmidlist {prefix}.Wrong.ids --mRNA > {prefix}.filter.gff
-{bin}/gffvert sort_gff {prefix}.filter.gff --locustag {prefix} >{prefix}.genome.gff
-{gffread}/gffread {prefix}.genome.gff -g {genome} -x {prefix}.CDS.fasta
+{bin}/gffvert sort_gff {prefix}.filter.gff --locustag {prefix} >{prefix}.genome.gff3
+{gffread}/gffread {prefix}.genome.gff3 -g {genome} -x {prefix}.CDS.fasta
 {bin}/gffvert cds2aa {prefix}.CDS.fasta --transl_table {translation_table} --force >{prefix}.protein.fasta
 
-{bin}/gffvert get_seq {prefix}.genome.gff --genome {genome} --dtype gene >{prefix}.gene.fasta
+{bin}/gffvert get_seq {prefix}.genome.gff3 --genome {genome} --dtype gene >{prefix}.gene.fasta
 cut -d "." -f 1 {prefix}.protein.fasta >{out_dir}/{prefix}.protein.fasta
 cut -d "." -f 1 {prefix}.CDS.fasta >{out_dir}/{prefix}.CDS.fasta
-cp {prefix}.genome.gff {prefix}.gene.fasta {out_dir}
+cp {prefix}.genome.gff3 {prefix}.gene.fasta {out_dir}
 """.format(script=SCRIPTS,
            bin=BIN,
            gffread=GFFREAD_BIN,
@@ -112,7 +112,7 @@ cp {prefix}.genome.gff {prefix}.gene.fasta {out_dir}
 
     join_task.set_upstream(*tasks)
 
-    return tasks, join_task, os.path.join(out_dir, "%s.protein.fasta" % prefix), os.path.join(out_dir, "%s.genome.gff" % prefix) 
+    return tasks, join_task, os.path.join(out_dir, "%s.protein.fasta" % prefix), os.path.join(out_dir, "%s.genome.gff3" % prefix) 
 
 
 def create_busco_task(protein, prefix, busco_database, thread, job_type,
@@ -167,7 +167,10 @@ def run_ransposonPSI(genome, prefix, gff, translation_table=1, kingdom="eukaryot
     out_dir = mkdir(out_dir)
     gff = check_path(gff)
     genome = check_path(genome)
-    if busco_database:
+ 
+    if busco_database == "no_busco":
+        busco_database = ""
+    elif busco_database:
         try:
             try:
                 temp = check_path("%s_odb12/refseq_db.faa" % busco_database) #输入路径
@@ -206,18 +209,19 @@ def run_ransposonPSI(genome, prefix, gff, translation_table=1, kingdom="eukaryot
     dag.add_task(*PSI_tasks)
     dag.add_task(PSI_join_task)
 
-    busco_task, busco_join_task = create_busco_task(
-        protein=protein,
-        prefix=prefix,
-        thread=8,
-        job_type=job_type,
-        work_dir=work_dir,
-        out_dir=out_dir,
-        busco_database=busco_database
-    )
-    dag.add_task(busco_task)
-    dag.add_task(busco_join_task)
-    busco_task.set_upstream(PSI_join_task)
+    if busco_database:
+        busco_task, busco_join_task = create_busco_task(
+            protein=protein,
+            prefix=prefix,
+            thread=8,
+            job_type=job_type,
+            work_dir=work_dir,
+            out_dir=out_dir,
+            busco_database=busco_database
+        )
+        dag.add_task(busco_task)
+        dag.add_task(busco_join_task)
+        busco_task.set_upstream(PSI_join_task)
 
     do_dag(dag, concurrent, refresh)
 

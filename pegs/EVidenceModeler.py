@@ -34,18 +34,17 @@ OTHER_PREDICTION\tGMST\t8
 OTHER_PREDICTION\tEviAnn\t12
 """
 
-#CONFIG = """\
-"""
-PROTEIN\tMetaEuk\t1
-PROTEIN\tminiprot\t1
-PROTEIN\tbusco\t5
-ABINITIO_PREDICTION\tGeneMark\t1
-ABINITIO_PREDICTION\tGlimmerHMM\t1
-ABINITIO_PREDICTION\tAugustus\t8
-TRANSCRIPT\tassembler-pasa.sqlite\t12
-OTHER_PREDICTION\ttransdecoder\t5
-OTHER_PREDICTION\tGMST\t5
-OTHER_PREDICTION\tEviAnn\t10
+FCONFIG = """\
+PROTEIN\tMetaEuk\t5
+PROTEIN\tminiprot\t6
+PROTEIN\tbusco\t10
+ABINITIO_PREDICTION\tGeneMark\t2
+ABINITIO_PREDICTION\tGlimmerHMM\t2
+ABINITIO_PREDICTION\tAugustus\t1
+TRANSCRIPT\tassembler-pasa.sqlite\t10
+OTHER_PREDICTION\ttransdecoder\t8
+OTHER_PREDICTION\tGMST\t8
+OTHER_PREDICTION\tEviAnn\t12
 """
 
 
@@ -54,13 +53,15 @@ def create_evm_task(genome, predict_gffs, protein_gffs, transcript_gffs, pasa_gf
                     kingdom="fungi", thread=10):
 
     weight = os.path.join(work_dir, "weights.txt")
-    with open(weight, "w") as fh:
-        fh.write(CONFIG)
-
     #不对序列进行拆分运行
     x = ""
     if kingdom=="fungi":
-        x = "--min_intron_length 0 --terminal_intergenic_re_search 500"
+        x = "--min_intron_length 5 --terminal_intergenic_re_search 10000"
+        with open(weight, "w") as fh:
+            fh.write(FCONFIG)
+    else:
+        with open(weight, "w") as fh:
+            fh.write(CONFIG)
         
     tran1 = ""
     if transcript_gffs:
@@ -92,8 +93,8 @@ export PATH={evm_bin}:$PATH
 if [ ! -f "{prefix}.EVM.gff3" ]; then
   EVidenceModeler --sample_id {prefix} --genome genome.fasta\\
     --weights {weight} --gene_predictions predict.gff \\
-    {protein2} {pasa2} --segmentSize 100000\\
-    --overlapSize 10000 --CPU {thread} {x}
+    {protein2} {pasa2} --segmentSize 500000\\
+    --overlapSize 100000 --CPU {thread} {x}
 else
   touch evm_done
 fi
@@ -126,7 +127,7 @@ def create_evm_tasks(genome, predict_gffs, protein_gffs, transcript_gffs, pasa_g
 
     x = ""
     if kingdom=="fungi":
-        x = "--min_intron_length 0 --terminal_intergenic_re_search 500"
+        x = "--min_intron_length 5 --terminal_intergenic_re_search 10000"
  
     tran1 = ""
     if transcript_gffs:
@@ -159,7 +160,7 @@ export PATH={evm_bin}:$PATH
 perl {evm_bin}/EvmUtils/partition_EVM_inputs.pl --genome genome.fasta \\
   --partition_dir {work_dir}/evm \\
   --gene_predictions predict.gff {protein2} {pasa2} \\
-  --segmentSize 10000000 --overlapSize 200000 --partition_listing partitions.list
+  --segmentSize 1000000 --overlapSize 200000 --partition_listing partitions.list
 perl {evm_bin}/EvmUtils/write_EVM_commands.pl --genome genome.fasta {pasa2} \\
   --weights {weight} {x} \\
   --gene_predictions predict.gff {protein2} \\

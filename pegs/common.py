@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import os
 import re
 import sys
+import pwd
 from glob import glob
 import logging
 from glob import glob
@@ -397,4 +398,21 @@ def read_fasta(file):
     if r:
         yield r.split("\n", 1)
 
-    fp.close() 
+    fp.close()
+
+
+def get_uid(username=None):
+ 
+    #获取当前有效用户ID
+    if username is None:
+        r = "%s:%s" % (os.getuid(), os.getgid())
+    else:
+        try:
+            user_info = pwd.getpwnam(username)
+            r = "%s:%s" % (user_info.pw_uid, user_info.pw_gid)
+        except KeyError:
+            r = None
+    
+    return r
+ 
+
