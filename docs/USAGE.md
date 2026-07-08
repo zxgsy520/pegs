@@ -9,11 +9,11 @@ Table of Contents
 
 ## <a name="quickusage"></a> Quick usage
 ### Preparation of Homologous Genes(Required)
-*(1) Download protein sequences of closely related species from NCBI or UniProt.
+* (1) Download protein sequences of closely related species from NCBI or UniProt.
 
-*(2) Remove protein sequences of mitochondrial and chloroplast origin.
+* (2) Remove protein sequences of mitochondrial and chloroplast origin.
 
-*(3) Protein Sequence Deduplication:
+* (3) Protein Sequence Deduplication:
 ```
 name=Yarrowia
 biotool filter_seq Yarrowia_uniprotkb.fasta --minlen 10 >${name}.faa  #过过短的蛋白质序列
