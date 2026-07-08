@@ -1,4 +1,4 @@
-pegs
+Pegs
 ==============
 Workflow of Eukaryotic Gene Prediction
 ### V1.3.0a
@@ -11,11 +11,11 @@ Manuals
   
 Latest updates
 --------------
-### V1.3.0a
+pegs V1.3.0a
 ==============================
 * The pipeline now supports UTR annotation from transcriptome data.
 
-Flye V1.3.0 
+pegs V1.3.0 
 ==============================
 * The splitting method has been changed from "per contig" to "by file size" (default 20 Mb) to accommodate second‑generation assembled genomes.
 * Added Miniprot as a homology‑based alignment annotation module.
