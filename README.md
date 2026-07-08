@@ -1,7 +1,29 @@
-# pegs
+pegs
+==============
 Workflow of Eukaryotic Gene Prediction
+### V1.3.0a
+The pipeline now supports UTR annotation from transcriptome data.
 
-## Technical Features (技术特性)
+Manuals
+-------
+
+- [Usage](docs/USAGE.md)
+  
+Latest updates
+--------------
+### V1.3.0a
+==============================
+* The pipeline now supports UTR annotation from transcriptome data.
+
+Flye V1.3.0 
+==============================
+* The splitting method has been changed from "per contig" to "by file size" (default 20 Mb) to accommodate second‑generation assembled genomes.
+* Added Miniprot as a homology‑based alignment annotation module.
+* Added support for invoking EVIANN for annotation when transcriptome data are available.
+* Added codon parameter configuration to broaden the applicability to more species.
+
+Technical Features (技术特性)
+------------
 Tech for a better life, Open Source for a brighter future.
 
 We are committed to promoting technological progress. This project is open for academic research and personal learning, but commercial use is strictly prohibited.
@@ -26,8 +48,9 @@ We are committed to promoting technological progress. This project is open for a
 (5) The entire pipeline framework and all data processing scripts are developed in Python, ensuring high code maintainability and facilitating future feature extensions, parameter tuning, and algorithmic updates.
 
 目前完成了几十个基因组的注释。欢迎大家测试和提问（后续会推出docker版本）。
-## Third-party
------------
+
+Third-party
+---------------
 
 pegs package includes some third-party software:
 * [python](https://www.python.org/) (使用python3运行较多，使用python2也是可以运行的，撰写的充分考虑了兼容问题)
@@ -55,12 +78,13 @@ pegs package includes some third-party software:
 * [ransposonPSI](http://transposonpsi.sourceforge.net/)
 * [STAR](https://github.com/alexdobin/STAR)
 
-## Model Website
+### Model Website
 Augustus Model:[https://github.com/zxgsy520/augustus_model](https://github.com/zxgsy520/augustus_model)  #训练好的模型，可以下载使用（目前没有上传完，有需要可联系我们）
 #后续我们将推出更高质量的模型
 GlimmerHMM  Model: （待上传）
 
-## Installation
+Installation
+-------
 ```
 git clone https://github.com/zxgsy520/pegs.git
 mkdir bin
@@ -73,7 +97,8 @@ cd pegs
 #Modify software configuration files, or add related software to environment variables.
 vi config.py #编辑文件，配置相关软件和数据库
 ```
-## Quick usage
+Quick usage
+-------
 ```
 ./fpegs.py -h
 usage: fpegs.py [-h] [-m FILE] -p FILE [--cds FILE] [--rna_list FILE]
@@ -139,7 +164,8 @@ optional arguments:
   --out_dir DIR         Output directory (default: current directory) #设置最终输出结果路径
 ```
 
-## Example
+Example
+-------
 ### Transcriptome assisted gene prediction（转绿组辅助基因组预测）
 ```
 python pegs/rnaseq2gene.py genome.fasta --rnaseq  rna.list \
@@ -189,21 +215,9 @@ fpegs.py genome.fasta \ #输入预测的基因组
   --busco_database diptera \  #设置用于评估的busco数据
   --job_type sge --work_dir fast_work --out_dir fast_out 
 ```
-## Release Notes
-### V1.3.0a
-The pipeline now supports UTR annotation from transcriptome data.
 
-### V1.3.0 
-The splitting method has been changed from "per contig" to "by file size" (default 20 Mb) to accommodate second‑generation assembled genomes.
-
-Added Miniprot as a homology‑based alignment annotation module.
-
-Added support for invoking EVIANN for annotation when transcriptome data are available.
-
-Added codon parameter configuration to broaden the applicability to more species.
-
-
-## Copyright and Patent Notice（版权和专利声明）
+Copyright and Patent Notice（版权和专利声明）
+-------
 本项目包含受保护的方法与代码，相关权利信息如下：
 
 -----------
@@ -211,7 +225,7 @@ Added codon parameter configuration to broaden the applicability to more species
 
 [2] 武汉百易汇能生物科技有限公司. 百易汇能真核生物基因结构预测软件bypegs [CP]. 1.1.4. 北京：中国版权保护中心，2025. 登记号 2025SR2325155.
 
-## Application results
+Application results
 -----------
 [1] Luo X, Shua Z, Zhao D, Liu B, Luo H, Chen Y, Meng D, Song Z, Yang Q, Wang Z, Tang D, Zhang X, Zhang J, Ma K, Yao W. Genome assembly of pomegranate highlights structural variations driving population differentiation and key loci underpinning cold adaption. Hortic Res. 2025 Jan 21;12(5):uhaf022. doi: [10.1093/hr/uhaf022](https://pmc.ncbi.nlm.nih.gov/articles/PMC11979328/). PMID: 40206514; PMCID: PMC11979328.
 
@@ -220,7 +234,8 @@ Added codon parameter configuration to broaden the applicability to more species
 [3] Wang, Gangzheng and Gao, Ziyan and Xing, Jiajiao and Deng, Zeyu and Yan, Lianlian and Zhang, Chenghua and Xu, Jianping and Deng, Wangqiu, Genomic and Transcriptomic Insights on Lignocellulose Degradation, High Temperature Adaptation and Triterpene Biosynthesis in Ganoderma Colossus. Available at SSRN: [https://ssrn.com/abstract=5276061](https://webofscience.clarivate.cn/wos/woscc/full-record/WOS:000871934300001) or [http://dx.doi.org/10.2139/ssrn.5276061](https://webofscience.clarivate.cn/wos/woscc/full-record/WOS:000871934300001)
 
 
-## Forecast results
+Forecast results
+-------
 |物种中文名称|注释方法|线程数目（CPU/h）|基因组大小（Mb）|congtig序列数目|基因数目|平均CDS长度|蛋白质BUSCOs完整性（%）|	蛋白质功能注释率（%）|说明|
 |  ----  |  ----  | ----  |  ----  | ----  |  ----  | ----  |  ----  | ----  |----  |
 |草酸青霉|pegs	|196|	32.98|11|11,946|1,410.99|99.34|95.83|无转录组|
