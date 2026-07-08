@@ -190,6 +190,9 @@ fpegs.py genome.fasta \ #输入预测的基因组
   --job_type sge --work_dir fast_work --out_dir fast_out 
 ```
 ## Release Notes
+### V1.3.0a
+The pipeline now supports UTR annotation from transcriptome data.
+
 ### V1.3.0 
 The splitting method has been changed from "per contig" to "by file size" (default 20 Mb) to accommodate second‑generation assembled genomes.
 
