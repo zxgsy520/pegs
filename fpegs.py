@@ -19,7 +19,7 @@ from pegs.de_novo_ann import *
 LOG = logging.getLogger(__name__)
 __author__ = ("Xingguo Zhang",)
 __email__ = "invicoun@foxmail.com"
-__version__ = "v1.2.3"
+__version__ = "v1.3.0"
 
 
 def create_homo_ann_task(genome, protein, cds, rna_list, prefix, translation_table=1, work_dir="", out_dir="",
@@ -55,13 +55,15 @@ rm -rf 00_genome
            work_dir=work_dir,
            out_dir=out_dir)
     )
+    metaeuk_gff = os.path.join(out_dir, "%s.metaeuk.gff" % prefix)
+    miniprot_gff = os.path.join(out_dir, "%s.miniprot.gff" % prefix)
 
     if cds or rna_list:
         miniprot_gff = os.path.join(out_dir, "%s.eviann.gff" % prefix)
     else:
         miniprot_gff = os.path.join(out_dir, "%s.miniprot.gff" % prefix)
 
-    return task, os.path.join(out_dir, "%s.metaeuk.gff" % prefix), miniprot_gff
+    return task, metaeuk_gff, miniprot_gff
 
 
 def create_de_novo_ann_task(genome, homo, homogff, prefix, species,
@@ -212,6 +214,41 @@ python {root}/pegs/ransposonPSI.py {genome}\\
            out_dir=out_dir)
     )
 
+    return task, os.path.join(work_dir, "%s.genome.gff3" % prefix)
+
+
+def create_utr_task(genome, gff, transcript, pasa_db, busco_database="", translation_table=1,
+                    prefix="out", thread=10, job_type="sge", work_dir="./", out_dir="./"):
+
+    x = ""
+    if busco_database:
+        x = "--busco_database %s" % busco_database
+ 
+    task = Task(
+        id="run_utr",
+        work_dir=work_dir,
+        type=job_type,
+        option="-pe smp 1 %s" % QUEUE,
+        script="""
+python {root}/pegs/add_utr.py {genome} \\
+  --gff {gff} --transcript {transcript} \\
+  --pasa_db {pasa_db} --prefix {prefix} --thread {thread} \\
+  --job_type {job_type} --translation_table {translation_table} {x}\\
+  --concurrent 2 --refresh 30 --work_dir {work_dir} --out_dir {out_dir}
+""".format(root=ROOT,
+           genome=genome,
+           gff=gff,
+           transcript=transcript,
+           pasa_db=pasa_db,
+           translation_table=translation_table,
+           x=x,
+           prefix=prefix,
+           thread=thread,
+           job_type=job_type,
+           work_dir=work_dir,
+           out_dir=out_dir)
+    )
+
     return task
 
 
@@ -273,9 +310,9 @@ rm -rf gffStat.out
     return 0
 
 
-def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff, prefix, species,
-              busco_database, job_type, work_dir, out_dir, translation_table=1, thread=10, concurrent=10, 
-              refresh=30, kingdom="fungi", no_split=False):
+def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff, transcript, pasa_db,
+              prefix, species, busco_database, job_type, work_dir, out_dir, translation_table=1,
+              thread=10, concurrent=10, refresh=30, kingdom="fungi", no_split=False):
 
     genome = check_path(genome)
     protein = check_path(protein)
@@ -285,6 +322,10 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         rna_list = check_path(rna_list)
     if cds:
         cds = check_path(cds)
+    if transcript:
+        transcript = check_path(transcript)
+        pasa_db = check_path(pasa_db)
+
 
     work_dir = mkdir(work_dir)
     out_dir = mkdir(out_dir)
@@ -318,6 +359,7 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
         "aug": "03_augustus",
         "evm": "04_EVM",
         "psi": "05_PSI",
+        "utr": "06_UTR"
     }
 
     for k, v in work_dict.items():
@@ -431,11 +473,17 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
     evm_task.set_upstream(aug_task)
     dag.add_task(evm_task)
 
-    PSI_task = create_PSI_task(genome=genome,
+ 
+    if transcript:
+        temp_busco = "no_busco"
+    else:
+        temp_busco = busco_database
+
+    PSI_task, gff = create_PSI_task(genome=genome,
         gff=evm_gff,
         prefix=prefix,
         kingdom=kingdom,
-        busco_database=busco_database,
+        busco_database=temp_busco,
         translation_table=translation_table,
         job_type=job_type,
         work_dir=os.path.join(work_dir, work_dict["psi"]),
@@ -443,6 +491,22 @@ def run_fpegs(genome, masked, protein, cds, rna_list, homo, homogff, introns_gff
     )
     PSI_task.set_upstream(evm_task)
     dag.add_task(PSI_task)
+
+    if transcript:
+        utr_task = create_utr_task(genome=genome,
+            gff=gff,
+            transcript=transcript,
+            busco_database=busco_database,
+            translation_table=translation_table,
+            pasa_db=pasa_db,
+            prefix=prefix,
+            thread=thread,
+            job_type=job_type,
+            work_dir=os.path.join(work_dir, work_dict["utr"]),
+            out_dir=out_dir
+        )
+        utr_task.set_upstream(PSI_task)
+        dag.add_task(utr_task)
 
     do_dag(dag, concurrent_tasks=concurrent, refresh_time=refresh)
 
@@ -469,6 +533,10 @@ def add_hlep_args(parser):
         help="Input gff file for homologous species annotation.")
     parser.add_argument("-igff", "--introns_gff", metavar="FILE", type=str, default=False,
         help="Input gff file for introns(introns.f.gff)")
+    parser.add_argument("-tran", "--transcript", metavar="FILE", type=str, default=False,
+        help="Input transcriptome assembly results(transcript.fasta).")
+    parser.add_argument("-pdb", "--pasa_db", metavar="FILE", type=str, default=False,
+        help="Input pasa DB(pasa.sqlite).")
     parser.add_argument("--prefix", metavar="STR", type=str, default="ZXG",
         help="Input sample name.")
     parser.add_argument("-s", "--species", metavar="STR", type=str,  default=False,
@@ -525,8 +593,8 @@ contact:  %s <%s>\
 
     run_fpegs(genome=args.genome, masked=args.masked, protein=args.protein,
               cds=args.cds, rna_list=args.rna_list, homo=args.homo, translation_table=args.translation_table,
-              homogff=args.homogff, introns_gff=args.introns_gff, prefix=args.prefix,
-              species=args.species, busco_database=args.busco_database, thread=args.thread,
+              homogff=args.homogff, introns_gff=args.introns_gff, transcript=args.transcript, pasa_db=args.pasa_db,
+              prefix=args.prefix, species=args.species, busco_database=args.busco_database, thread=args.thread,
               job_type=args.job_type, work_dir=args.work_dir, out_dir=args.out_dir,
               concurrent=args.concurrent, refresh=args.refresh, kingdom=args.kingdom, 
               no_split=args.no_split)
